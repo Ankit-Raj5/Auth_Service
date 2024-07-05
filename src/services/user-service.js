@@ -35,14 +35,30 @@ class UserService {
             //step3 → if password matches then create a token and send it to the user
             const newJWT = this.createToken({email: user.email, id: user.id});
             return newJWT;
-            
 
         } catch (error) {
-            console.log("Something went wrong at service layer");
+            console.log("Something went wrong in sign in process at service layer");
             throw error;
         }
     }
 
+
+    async isAuthenticated(token ){
+        try {
+            const response = this.verifyToken(token);
+            if(!response){
+                throw {error: 'Invalid token'}
+            }
+            const user = this.userRepository.getById(response.id);
+            if(!user){
+                throw { error: 'No user with the coressponding token'};
+            }
+            return user.id;
+        } catch (error) {
+            console.log("Something went wrong in auth process at service layer");
+            throw error;
+        }
+    }
 
 
 
